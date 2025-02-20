@@ -6,12 +6,18 @@ import { useState } from "react";
 
 export default function Home() {
   const [participants, setParticipants] = useState<string[]>([]);
+  const [participantName, setParticipantName] = useState<string>("");
 
   function handleParticipantAdd() {
-    setParticipants((prevState) => [
-      ...prevState,
-      `Participante ${prevState.length + 1}`,
-    ]);
+    if (participants.includes(participantName)) {
+      return Alert.alert(
+        "Participante já adicionado",
+        "Este participante já foi adicionado a lista de presença"
+      );
+    }
+
+    setParticipants((prevState) => [...prevState, participantName]);
+    setParticipantName("");
   }
 
   function handleDeleteParticipant(name: string) {
@@ -20,7 +26,13 @@ export default function Home() {
       `Deseja remover o participante ${name}?`,
       [
         { text: "Não", style: "cancel" },
-        { text: "Sim", onPress: () => console.log(name) },
+        {
+          text: "Sim",
+          onPress: () =>
+            setParticipants((prevState) =>
+              prevState.filter((participant) => participant !== name)
+            ),
+        },
       ]
     );
   }
@@ -34,6 +46,8 @@ export default function Home() {
           style={styles.input}
           placeholder="Nome do Participante"
           placeholderTextColor="#6B6B6B"
+          onChangeText={setParticipantName}
+          value={participantName}
         />
         <Button onPress={handleParticipantAdd} text="+" type="add" />
       </View>
